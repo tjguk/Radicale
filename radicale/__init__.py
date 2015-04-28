@@ -125,7 +125,18 @@ class RequestHandler(wsgiref.simple_server.WSGIRequestHandler):
                 wsgiref.simple_server.WSGIRequestHandler.address_string(self)
         else:
             return self.client_address[0]
+    
+    def environ(self, *args, **kwargs):
+        try:
+            return wsgiref.simple_server.WSGIRequestHandler.environ(self, *args, **kwargs)
+        except:
+            log.LOGGER.exception("Unhandled exception in environ")
 
+    def handle(self, *args, **kwargs):
+        try:
+            return wsgiref.simple_server.WSGIRequestHandler.handle(self, *args, **kwargs)
+        except:
+            log.LOGGER.exception("Unhandled exception in handle")
 
 class Application(object):
     """WSGI application managing collections."""
