@@ -170,7 +170,8 @@ class Application(object):
         # First append content charset given in the request
         content_type = environ.get("CONTENT_TYPE")
         if content_type and "charset=" in content_type:
-            charsets.append(content_type.split("charset=")[1].strip())
+            charsets.append(
+                content_type.split("charset=")[1].split(";")[0].strip())
         # Then append default Radicale charset
         charsets.append(self.encoding)
         # Then append various fallbacks
@@ -393,8 +394,8 @@ class Application(object):
 
         if item:
             # Evolution bug workaround
-            etag = environ.get("HTTP_IF_MATCH", item.etag).replace("\\", "")
-            if etag == item.etag:
+            if_match = environ.get("HTTP_IF_MATCH", "*").replace("\\", "")
+            if if_match in ("*", item.etag):
                 # No ETag precondition or precondition verified, delete item
                 answer = xmlutils.delete(environ["PATH_INFO"], collection)
                 return client.OK, {}, answer
